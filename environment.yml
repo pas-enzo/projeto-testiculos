@@ -8,11 +8,21 @@ dependencies:
   # unsigned DLLs without reputation (conda-forge glib/pandas/matplotlib,
   # freshly released wheels such as pandas 3.x), so versions are pinned.
   - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu121
+      - torch==2.5.1+cu121
+      - torchvision==0.20.1+cu121
+      - segmentation-models-pytorch==0.5.0
+      - albumentations==2.0.8
+      - pydantic==2.12.3
+      - pydantic-core==2.41.4
+      - stringzilla==4.6.0
+      - tensorboard
       - numpy
       - pandas==2.3.3
       - shapely>=2
       - pillow
       - matplotlib==3.10.8
+      - opencv-python-headless==4.10.0.84
       - tqdm
       - openslide-python>=1.4
       - openslide-bin

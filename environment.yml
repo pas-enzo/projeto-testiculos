@@ -1,0 +1,18 @@
+name: projeto_testiculos
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  # Binary packages come from PyPI wheels: Windows Smart App Control blocks
+  # unsigned DLLs without reputation (conda-forge glib/pandas/matplotlib,
+  # freshly released wheels such as pandas 3.x), so versions are pinned.
+  - pip:
+      - numpy
+      - pandas==2.3.3
+      - shapely>=2
+      - pillow
+      - matplotlib==3.10.8
+      - tqdm
+      - openslide-python>=1.4
+      - openslide-bin

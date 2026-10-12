@@ -1,0 +1,14 @@
+# Whole-slide images (large binaries)
+*.svs
+*.ndpi
+*.tif
+*.tiff
+*.mrxs
+
+# Generated data and outputs
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

@@ -38,6 +38,8 @@ STD = np.array([0.229, 0.224, 0.225], dtype=np.float32) * 255
 
 def parse_split(spec: list[str], tiles: pd.DataFrame) -> np.ndarray:
     is_val = np.zeros(len(tiles), dtype=bool)
+    if spec == ["none"]:
+        return is_val
     for token in spec:
         slide_id, _, frags = token.partition(":")
         sel = tiles["slide_id"].to_numpy() == slide_id
@@ -222,7 +224,8 @@ def main():
     parser.add_argument("--patches", type=Path, default=Path("outputs/patches"))
     parser.add_argument("--runs", type=Path, default=Path("outputs/runs"))
     parser.add_argument("--run-name", default=None)
-    parser.add_argument("--val", nargs="+", default=["3PAS:*"], help="held-out slide:fragments tokens")
+    parser.add_argument("--val", nargs="+", default=["3PAS:*"],
+                        help="held-out slide:fragments tokens, or 'none' to train on every tile")
     parser.add_argument("--encoder", default="resnet34")
     parser.add_argument("--crop", type=int, default=512)
     parser.add_argument("--batch-size", type=int, default=4)
@@ -289,7 +292,7 @@ def main():
         record = {"epoch": epoch, "train_loss": running / len(loader), "lr": scheduler.get_last_lr()[0],
                   "epoch_s": time.time() - t0}
 
-        if epoch % args.val_every == 0 or epoch == args.epochs:
+        if len(val_rows) and (epoch % args.val_every == 0 or epoch == args.epochs):
             metrics, per_tubule, previews = evaluate(model, val_rows, args.patches, device, pp, amp, preview_n=6)
             record.update(metrics)
             if metrics["inst_mean_iou"] > best:
@@ -308,7 +311,10 @@ def main():
         print(msg, flush=True)
 
     torch.save({"model": model.state_dict(), "encoder": args.encoder, "epoch": args.epochs}, run_dir / "last.pt")
-    print(f"best val instance IoU: {best:.3f}  -> {run_dir.resolve()}")
+    if len(val_rows):
+        print(f"best val instance IoU: {best:.3f}  -> {run_dir.resolve()}")
+    else:
+        print(f"trained without validation -> {run_dir.resolve() / 'last.pt'}")
 
 
 if __name__ == "__main__":
